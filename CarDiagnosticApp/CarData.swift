@@ -8,10 +8,10 @@ class CarData: ObservableObject {
     @Published var engineTemperature: Double
     @Published var batteryLevel: Double
     @Published var fuelEfficiency: Double
-    
     @Published var engineTemperatureHistory: [DataPoint] = []
     @Published var batteryLevelHistory: [DataPoint] = []
     @Published var fuelEfficiencyHistory: [DataPoint] = []
+    @Published var tirePressureHistory: [DataPoint] = [] // 타이어 압력 기록 추가
     @Published var batteryUsageHistory: [BatteryUsage] = []  // 배터리 사용 기록 추가
     
     // 추가 데이터 포인트
@@ -233,40 +233,104 @@ class CarData: ObservableObject {
 }
 
 extension CarData {
-    func generatePDFReport() -> URL? {
-        let pageBounds = CGRect(x: 0, y: 0, width: 612, height: 792)
+    func generateEnhancedPDFReport() -> URL? {
+        let pageBounds = CGRect(x: 0, y: 0, width: 612, height: 792) // A4 사이즈
         let pdfData = NSMutableData()
         
         UIGraphicsBeginPDFContextToData(pdfData, pageBounds, nil)
+        var yOffset: CGFloat = 740 // 페이지 상단에서부터 시작
+        
+        func addNewPageIfNeeded() {
+            if yOffset < 100 { // 충분한 공간이 없으면 새 페이지 추가
+                UIGraphicsBeginPDFPageWithInfo(pageBounds, nil)
+                yOffset = 740
+            }
+        }
+        
         UIGraphicsBeginPDFPageWithInfo(pageBounds, nil)
         
-        guard UIGraphicsGetCurrentContext() != nil else { return nil }
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
         
-        let reportTitle = "Car Diagnostic Report"
-        let batteryPrediction = batteryLifePrediction()
-        let engineSummary = String(format: "Engine Temperature: %.1f °C", engineTemperatureHistory.last?.value ?? 0)
-        let batterySummary = String(format: "Battery Level: %.1f %%", batteryLevelHistory.last?.value ?? 0)
-        let fuelSummary = String(format: "Fuel Efficiency: %.1f km/l", fuelEfficiencyHistory.last?.value ?? 0)
+        // 상단 타이틀 및 날짜
+        let reportTitle = "Comprehensive Car Diagnostic Report"
+        let diagnosticDate = DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short)
         
         let titleAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.boldSystemFont(ofSize: 20),
+            .font: UIFont.boldSystemFont(ofSize: 22),
             .foregroundColor: UIColor.black
         ]
-        reportTitle.draw(at: CGPoint(x: 72, y: 700), withAttributes: titleAttributes)
+        reportTitle.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: titleAttributes)
+        yOffset -= 30
         
+        let dateText = "Generated on: \(diagnosticDate)"
+        let dateAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 12),
+            .foregroundColor: UIColor.gray
+        ]
+        dateText.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: dateAttributes)
+        yOffset -= 40
+        
+        // 진단 요약 섹션
+        let sectionTitleAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.boldSystemFont(ofSize: 18),
+            .foregroundColor: UIColor.black
+        ]
         let contentAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 14),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.darkGray
         ]
         
-        engineSummary.draw(at: CGPoint(x: 72, y: 650), withAttributes: contentAttributes)
-        batterySummary.draw(at: CGPoint(x: 72, y: 630), withAttributes: contentAttributes)
-        fuelSummary.draw(at: CGPoint(x: 72, y: 610), withAttributes: contentAttributes)
-        batteryPrediction.draw(at: CGPoint(x: 72, y: 590), withAttributes: contentAttributes)
+        // 섹션 타이틀
+        "Diagnostic Summary".draw(at: CGPoint(x: 72, y: yOffset), withAttributes: sectionTitleAttributes)
+        yOffset -= 30
+        
+        // 진단 요약 내용
+        let engineSummary = "• Engine Temperature: \(engineTemperatureStatus().0) - \(String(format: "%.1f", engineTemperature))°C"
+        let batterySummary = "• Battery Level: \(batteryLevelStatus().0) - \(String(format: "%.1f", batteryLevel))%"
+        let fuelSummary = "• Fuel Efficiency: \(String(format: "%.1f", fuelEfficiency)) km/l"
+        let tirePressureSummary = "• Tire Pressure: \(tirePressureStatus().0) - \(String(format: "%.1f", tirePressure)) PSI"
+        let batteryVoltageSummary = "• Battery Voltage: \(String(format: "%.1f", batteryVoltage)) V"
+        
+        let summaries = [engineSummary, batterySummary, fuelSummary, tirePressureSummary, batteryVoltageSummary]
+        
+        for summary in summaries {
+            summary.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: contentAttributes)
+            yOffset -= 20
+            addNewPageIfNeeded()
+        }
+        
+        yOffset -= 20
+        
+        // 권장 조치 섹션
+        "Recommended Actions".draw(at: CGPoint(x: 72, y: yOffset), withAttributes: sectionTitleAttributes)
+        yOffset -= 30
+        let recommendationsText = generateRecommendations()
+        
+        // 단일 줄로 작성된 텍스트를 각 줄로 나눠서 그려주는 방식으로 수정
+        for line in recommendationsText.split(separator: "\n") {
+            let lineText = String(line)
+            lineText.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: contentAttributes)
+            yOffset -= 20
+            addNewPageIfNeeded()
+        }
+        yOffset -= 10
+        
+        // 그래프 추가
+        drawLineGraph(dataPoints: engineTemperatureHistory, title: "Engine Temperature Over Time", context: context, origin: CGPoint(x: 72, y: yOffset))
+        yOffset -= 150
+        addNewPageIfNeeded()
+        
+        drawLineGraph(dataPoints: batteryLevelHistory, title: "Battery Level Over Time", context: context, origin: CGPoint(x: 72, y: yOffset))
+        yOffset -= 150
+        addNewPageIfNeeded()
+        
+        drawLineGraph(dataPoints: tirePressureHistory, title: "Tire Pressure Over Time", context: context, origin: CGPoint(x: 72, y: yOffset))
+        yOffset -= 150
+        addNewPageIfNeeded()
         
         UIGraphicsEndPDFContext()
         
-        let fileURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("CarDiagnosticReport.pdf")
+        let fileURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("EnhancedCarDiagnosticReport.pdf")
         
         do {
             try pdfData.write(to: fileURL)
@@ -275,5 +339,57 @@ extension CarData {
             print("Failed to save PDF file: \(error)")
             return nil
         }
+    }
+    
+    // 권장 조치를 생성하는 메서드
+    private func generateRecommendations() -> String {
+        var recommendations = [String]()
+        
+        if engineTemperature > settings.engineTemperatureThreshold {
+            recommendations.append("Engine temperature is high. Check coolant and radiator.")
+        }
+        if batteryLevel < settings.batteryLevelThreshold {
+            recommendations.append("Battery level is low. Consider recharging or replacing the battery.")
+        }
+        if tirePressure < 30 || tirePressure > 35 {
+            recommendations.append("Tire pressure is outside the optimal range. Adjust pressure as needed.")
+        }
+        if batteryVoltage < 12.0 || batteryVoltage > 13.8 {
+            recommendations.append("Battery voltage is abnormal. Check the alternator and battery health.")
+        }
+        
+        return recommendations.joined(separator: "\n")
+    }
+    
+    // 그래프를 그리는 메서드 (엔진 온도 예시)
+    private func drawLineGraph(dataPoints: [DataPoint], title: String, context: CGContext, origin: CGPoint) {
+        context.saveGState()
+        context.setFillColor(UIColor.lightGray.cgColor)
+        context.fill(CGRect(x: origin.x, y: origin.y - 100, width: 468, height: 100))
+        
+        context.setStrokeColor(UIColor.blue.cgColor)
+        context.setLineWidth(1.5)
+        
+        if dataPoints.count > 1 {
+            let maxY = dataPoints.map { $0.value }.max() ?? 1
+            let scale = 100 / maxY
+            
+            for i in 1..<dataPoints.count {
+                let startPoint = CGPoint(x: origin.x + CGFloat(i - 1) * 10, y: origin.y - CGFloat(dataPoints[i - 1].value) * scale)
+                let endPoint = CGPoint(x: origin.x + CGFloat(i) * 10, y: origin.y - CGFloat(dataPoints[i].value) * scale)
+                
+                context.move(to: startPoint)
+                context.addLine(to: endPoint)
+                context.strokePath()
+            }
+        }
+        
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 12),
+            .foregroundColor: UIColor.black
+        ]
+        title.draw(at: CGPoint(x: origin.x, y: origin.y + 10), withAttributes: titleAttributes)
+        
+        context.restoreGState()
     }
 }

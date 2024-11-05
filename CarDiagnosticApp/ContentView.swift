@@ -169,7 +169,7 @@ struct ContentView: View {
                     
                     // PDF 리포트 생성 및 공유 버튼
                     Button(action: {
-                        if let url = carData.generatePDFReport() {
+                        if let url = carData.generateEnhancedPDFReport() {
                             reportURL = url
                             showingShareSheet = true
                         } else {
