@@ -1,9 +1,15 @@
 import Foundation
 
-struct DiagnosticRecord: Identifiable {
-    let id = UUID()  // 고유 ID를 부여하여 Identifiable 준수
-    let date: Date
-    let engineTemperature: Double
-    let batteryLevel: Double
-    let fuelEfficiency: Double
+struct DiagnosticRecord: Identifiable, Codable {
+    var id = UUID()
+    var date: Date
+    var engineTemperature: Double
+    var batteryLevel: Double
+    var fuelEfficiency: Double
+    var tirePressure: Double
+    var batteryVoltage: Double
+    var fuelLevel: Double
+    var intakeAirTemperature: Double
+    var engineLoad: Double
+    var oxygenSensor: Double
 }

@@ -6,8 +6,8 @@ struct ContentView: View {
     @StateObject private var settings = ThresholdSettings()
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var reportURL: URL? = nil // PDF 파일 URL 저장 변수
-    @State private var showingShareSheet = false // 공유 시트 표시 여부
+    @State private var reportURL: URL? = nil
+    @State private var showingShareSheet = false
 
     init() {
         let settings = ThresholdSettings()
@@ -42,149 +42,25 @@ struct ContentView: View {
                         .font(.title)
                         .padding()
                     
-                    // Engine Temperature 상태 표시
-                    HStack {
-                        Text("Engine Temperature:")
-                        Spacer()
-                        let (engineStatusText, engineStatusColor) = carData.engineTemperatureStatus()
-                        Text("\(carData.engineTemperature, specifier: "%.1f") °C - \(engineStatusText)")
-                            .foregroundColor(engineStatusColor)
+                    // 핵심 진단 항목 요약
+                    Group {
+                        DiagnosticDataView(label: "Engine Temperature:", value: String(format: "%.1f °C", carData.engineTemperature), color: carData.engineTemperatureStatus().1)
+                        DiagnosticDataView(label: "Battery Level:", value: String(format: "%.1f %%", carData.batteryLevel), color: carData.batteryLevelStatus().1)
+                        DiagnosticDataView(label: "Tire Pressure:", value: String(format: "%.1f PSI", carData.tirePressure), color: carData.tirePressureStatus().1)
                     }
-                    LineGraphView(dataPoints: carData.engineTemperatureHistory)
-                        .frame(height: 100)
-                        .padding()
-                    
-                    // Battery Level 상태 표시
-                    HStack {
-                        Text("Battery Level:")
-                        Spacer()
-                        let (batteryStatusText, batteryStatusColor) = carData.batteryLevelStatus()
-                        Text("\(carData.batteryLevel, specifier: "%.1f") % - \(batteryStatusText)")
-                            .foregroundColor(batteryStatusColor)
-                    }
-                    Text(carData.batteryLifePrediction())
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                        .padding(.bottom, 10)
-                    LineGraphView(dataPoints: carData.batteryLevelHistory)
-                        .frame(height: 100)
-                        .padding()
-                    
-                    // Fuel Efficiency 상태 표시 (연비는 상태 표시 없이 기본 색상 유지)
-                    HStack {
-                        Text("Fuel Efficiency:")
-                        Spacer()
-                        Text("\(carData.fuelEfficiency, specifier: "%.1f") km/l")
-                            .foregroundColor(carData.fuelEfficiency < 10 ? .orange : .primary)
-                    }
-                    LineGraphView(dataPoints: carData.fuelEfficiencyHistory)
-                        .frame(height: 100)
-                        .padding()
-                    
-                    // 추가 데이터 포인트 상태 표시
-                    HStack {
-                        Text("Tire Pressure:")
-                        Spacer()
-                        let (tireStatusText, tireStatusColor) = carData.tirePressureStatus()
-                        Text("\(carData.tirePressure, specifier: "%.1f") PSI - \(tireStatusText)")
-                            .foregroundColor(tireStatusColor)
-                    }
-                    
-                    HStack {
-                        Text("Battery Voltage:")
-                        Spacer()
-                        Text("\(carData.batteryVoltage, specifier: "%.1f") V")
-                            .foregroundColor(carData.batteryVoltage < 12.0 ? .orange : .primary)
-                    }
-                    
-                    HStack {
-                        Text("Fuel Level:")
-                        Spacer()
-                        Text("\(carData.fuelLevel, specifier: "%.1f") %")
-                            .foregroundColor(carData.fuelLevel < 15 ? .red : .primary)
-                    }
-                    
-                    HStack {
-                        Text("Intake Air Temperature:")
-                        Spacer()
-                        Text("\(carData.intakeAirTemperature, specifier: "%.1f") °C")
-                            .foregroundColor(carData.intakeAirTemperature > 35 ? .orange : .primary)
-                    }
-                    
-                    HStack {
-                        Text("Engine Load:")
-                        Spacer()
-                        Text("\(carData.engineLoad, specifier: "%.1f") %")
-                            .foregroundColor(carData.engineLoad > 70 ? .red : .primary)
-                    }
-                    
-                    HStack {
-                        Text("Oxygen Sensor:")
-                        Spacer()
-                        Text("\(carData.oxygenSensor, specifier: "%.2f") V")
-                            .foregroundColor(carData.oxygenSensor < 0.2 || carData.oxygenSensor > 0.8 ? .orange : .primary)
-                    }
-                    
-                    // 버튼들
-                    NavigationLink(destination: DetailedDiagnosticView(carData: carData)) {
-                        Text("View Detailed Diagnostics")
-                            .foregroundColor(.blue)
+                    .padding()
+
+                    // 요약 경고 메시지 표시
+                    if let alertMessage = overallStatusAlertMessage() {
+                        Text(alertMessage)
+                            .font(.headline)
+                            .foregroundColor(.red)
                             .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.blue, lineWidth: 1)
-                            )
                     }
                     
-                    NavigationLink(destination: DiagnosticHistoryView(carData: carData)) {
-                        Text("View Diagnostic History")
-                            .foregroundColor(.blue)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.blue, lineWidth: 1)
-                            )
-                    }
-                    
-                    NavigationLink(destination: ThresholdSettingsView(settings: settings)) {
-                        Text("Set Alert Thresholds")
-                            .foregroundColor(.blue)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.blue, lineWidth: 1)
-                            )
-                    }
-                    
-                    // 경고 히스토리 화면으로 이동하는 버튼
-                    NavigationLink(destination: WarningHistoryView(carData: carData)) {
-                        Text("View Warning History")
-                            .foregroundColor(.blue)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.blue, lineWidth: 1)
-                            )
-                    }
-                    
-                    // PDF 리포트 생성 및 공유 버튼
-                    Button(action: {
-                        if let url = carData.generateEnhancedPDFReport() {
-                            reportURL = url
-                            showingShareSheet = true
-                        } else {
-                            alertMessage = "Failed to generate report."
-                            showAlert = true
-                        }
-                    }) {
-                        Text("Generate and Share Report")
-                            .foregroundColor(.blue)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.blue, lineWidth: 1)
-                            )
-                    }
+                    // Navigation Links and Buttons
+                    NavigationLinksView(carData: carData, settings: settings)
+                    ReportButton(showingShareSheet: $showingShareSheet, reportURL: $reportURL, alertMessage: $alertMessage, showAlert: $showAlert, carData: carData)
                     
                     Spacer()
                 }
@@ -208,6 +84,106 @@ struct ContentView: View {
                     }
                 })
             }
+        }
+    }
+    
+    // 요약 경고 메시지 제공
+    private func overallStatusAlertMessage() -> String? {
+        var alerts: [String] = []
+        
+        if carData.engineTemperature > settings.engineTemperatureThresholdHigh {
+            alerts.append("High engine temperature detected!")
+        }
+        if carData.batteryLevel < settings.batteryLevelThresholdLow {
+            alerts.append("Low battery level detected!")
+        }
+        if carData.tirePressure < settings.tirePressureThresholdLow || carData.tirePressure > settings.tirePressureThresholdHigh {
+            alerts.append("Tire pressure is out of range!")
+        }
+        
+        return alerts.isEmpty ? nil : alerts.joined(separator: "\n")
+    }
+}
+
+struct DiagnosticDataView: View {
+    var label: String
+    var value: String
+    var color: Color
+    
+    var body: some View {
+        HStack {
+            Text(label)
+            Spacer()
+            Text(value)
+                .foregroundColor(color)
+        }
+        .padding(.horizontal)
+    }
+}
+
+struct NavigationLinksView: View {
+    var carData: CarData
+    var settings: ThresholdSettings
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            NavigationLink(destination: DetailedDiagnosticView(carData: carData)) {
+                NavigationButtonView(label: "View Detailed Diagnostics")
+            }
+            
+            NavigationLink(destination: DiagnosticHistoryView(carData: carData)) {
+                NavigationButtonView(label: "View Diagnostic History")
+            }
+            
+            NavigationLink(destination: ThresholdSettingsView(settings: settings)) {
+                NavigationButtonView(label: "Set Alert Thresholds")
+            }
+            
+            NavigationLink(destination: WarningHistoryView(carData: carData)) {
+                NavigationButtonView(label: "View Warning History")
+            }
+        }
+    }
+}
+
+struct NavigationButtonView: View {
+    var label: String
+    
+    var body: some View {
+        Text(label)
+            .foregroundColor(.blue)
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.blue, lineWidth: 1)
+            )
+    }
+}
+
+struct ReportButton: View {
+    @Binding var showingShareSheet: Bool
+    @Binding var reportURL: URL?
+    @Binding var alertMessage: String
+    @Binding var showAlert: Bool
+    var carData: CarData
+    
+    var body: some View {
+        Button(action: {
+            if let url = carData.generateEnhancedPDFReport() {
+                reportURL = url
+                showingShareSheet = true
+            } else {
+                alertMessage = "Failed to generate report."
+                showAlert = true
+            }
+        }) {
+            Text("Generate and Share Report")
+                .foregroundColor(.blue)
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.blue, lineWidth: 1)
+                )
         }
     }
 }

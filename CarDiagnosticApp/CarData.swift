@@ -11,8 +11,8 @@ class CarData: ObservableObject {
     @Published var engineTemperatureHistory: [DataPoint] = []
     @Published var batteryLevelHistory: [DataPoint] = []
     @Published var fuelEfficiencyHistory: [DataPoint] = []
-    @Published var tirePressureHistory: [DataPoint] = [] // 타이어 압력 기록 추가
-    @Published var batteryUsageHistory: [BatteryUsage] = []  // 배터리 사용 기록 추가
+    @Published var tirePressureHistory: [DataPoint] = []
+    @Published var batteryUsageHistory: [BatteryUsage] = []
     
     // 추가 데이터 포인트
     @Published var tirePressure: Double = 32.0
@@ -22,11 +22,12 @@ class CarData: ObservableObject {
     @Published var engineLoad: Double = 20.0
     @Published var oxygenSensor: Double = 0.45
     
-    @Published var warningLogs: [WarningLog] = []  // 경고 기록
+    @Published var warningLogs: [WarningLog] = []
+    private let maxWarningLogs = 50
     
     private var timer: Timer?
-    private var settings: ThresholdSettings  // 사용자 임계값 설정
-    var isConnected: Bool = false // Bluetooth 연결 상태 시뮬레이션
+    private var settings: ThresholdSettings
+    var isConnected: Bool = false
     
     init(settings: ThresholdSettings) {
         self.settings = settings
@@ -40,13 +41,14 @@ class CarData: ObservableObject {
         
         requestNotificationPermission()
         connectToOBD()
-        loadWarningLogs()  // 앱 실행 시 경고 로그 불러오기
+        loadWarningLogs()
     }
     
     func connectToOBD() {
         isConnected = true
         startMockDataUpdates()
     }
+    
     func disconnectFromOBD() {
         isConnected = false
     }
@@ -97,7 +99,7 @@ class CarData: ObservableObject {
         let recentData = batteryUsageHistory.suffix(5)
         let start = recentData.first!
         let end = recentData.last!
-        let timeInterval = end.date.timeIntervalSince(start.date) / 3600  // 시간 단위로 변환
+        let timeInterval = end.date.timeIntervalSince(start.date) / 3600
         
         guard timeInterval > 0 else {
             return "Invalid time interval"
@@ -115,59 +117,94 @@ class CarData: ObservableObject {
     }
     
     func engineTemperatureStatus() -> (String, Color) {
-        if engineTemperature > settings.engineTemperatureThreshold {
+        if engineTemperature > settings.engineTemperatureThresholdHigh {
             return ("High", .red)
-        } else if engineTemperature > settings.engineTemperatureThreshold * 0.8 {
+        } else if engineTemperature > settings.engineTemperatureThresholdModerate {
             return ("Moderate", .orange)
         } else {
             return ("Normal", .green)
         }
     }
     
-    // 배터리 수준 상태를 판별하고, 텍스트와 색상을 반환
     func batteryLevelStatus() -> (String, Color) {
-        if batteryLevel < settings.batteryLevelThreshold {
+        if batteryLevel < settings.batteryLevelThresholdLow {
             return ("Low", .red)
-        } else if batteryLevel < settings.batteryLevelThreshold * 1.2 {
+        } else if batteryLevel < settings.batteryLevelThresholdModerate {
             return ("Moderate", .orange)
         } else {
             return ("Normal", .green)
         }
     }
-
-    // 타이어 압력 상태를 판별하고, 텍스트와 색상을 반환
+    
     func tirePressureStatus() -> (String, Color) {
-        if tirePressure < 30 {
+        if tirePressure < settings.tirePressureThresholdLow {
             return ("Low", .red)
-        } else if tirePressure > 35 {
+        } else if tirePressure > settings.tirePressureThresholdHigh {
             return ("High", .orange)
         } else {
             return ("Normal", .green)
         }
     }
+    
 
     
-    // 경고 발생 시 로그 기록
-    func logWarning(type: String, message: String) {
-        let log = WarningLog(date: Date(), type: type, message: message)
-        warningLogs.append(log)
-        saveWarningLogs()
-    }
-    
     func checkForAlerts() {
-        if engineTemperature > settings.engineTemperatureThreshold {
-            let message = String(format: "Warning: Engine temperature is above %.0f°C!", settings.engineTemperatureThreshold)
+        // 엔진 온도 경고
+        if engineTemperature > settings.engineTemperatureThresholdHigh {
+            let message = String(format: "Warning: Engine temperature is above %.0f°C!", settings.engineTemperatureThresholdHigh)
             sendAlertNotification(message: message)
             logWarning(type: "Engine Temperature", message: message)
         }
         
-        if batteryLevel < settings.batteryLevelThreshold {
-            let message = String(format: "Warning: Battery level is below %.0f%%!", settings.batteryLevelThreshold)
+        // 배터리 레벨 경고
+        if batteryLevel < settings.batteryLevelThresholdLow {
+            let message = String(format: "Warning: Battery level is below %.0f%%!", settings.batteryLevelThresholdLow)
             sendAlertNotification(message: message)
             logWarning(type: "Battery Level", message: message)
         }
+        
+        // 타이어 압력 경고
+        if tirePressure < settings.tirePressureThresholdLow {
+            let message = String(format: "Warning: Tire pressure is below %.0f PSI!", settings.tirePressureThresholdLow)
+            sendAlertNotification(message: message)
+            logWarning(type: "Tire Pressure", message: message)
+        } else if tirePressure > settings.tirePressureThresholdHigh {
+            let message = String(format: "Warning: Tire pressure is above %.0f PSI!", settings.tirePressureThresholdHigh)
+            sendAlertNotification(message: message)
+            logWarning(type: "Tire Pressure", message: message)
+        }
+        
+        // 배터리 전압 경고
+        if batteryVoltage < 12.0 || batteryVoltage > 13.8 {
+            let message = "Warning: Battery voltage is abnormal (normal range: 12.0 - 13.8 V)."
+            sendAlertNotification(message: message)
+            logWarning(type: "Battery Voltage", message: message)
+        }
+        
+        // 산소 센서 경고
+        if oxygenSensor < 0.2 || oxygenSensor > 0.8 {
+            let message = "Warning: Oxygen sensor voltage is outside the normal range (0.2 - 0.8 V)."
+            sendAlertNotification(message: message)
+            logWarning(type: "Oxygen Sensor", message: message)
+        }
+        
+        // 연료 레벨 경고 (예시: 15% 이하일 때)
+        if fuelLevel < 15 {
+            let message = "Warning: Fuel level is below 15%."
+            sendAlertNotification(message: message)
+            logWarning(type: "Fuel Level", message: message)
+        }
     }
     
+    func logWarning(type: String, message: String) {
+        let log = WarningLog(date: Date(), type: type, message: message)
+        warningLogs.append(log)
+        if warningLogs.count > maxWarningLogs {
+            warningLogs.removeFirst()
+        }
+        
+        saveWarningLogs() // 변경된 로그 저장
+    }
     private func saveWarningLogs() {
         if let data = try? JSONEncoder().encode(warningLogs) {
             UserDefaults.standard.set(data, forKey: "WarningLogs")
@@ -180,6 +217,8 @@ class CarData: ObservableObject {
             warningLogs = logs
         }
     }
+    
+
     
     func sendAlertNotification(message: String) {
         let content = UNMutableNotificationContent()
@@ -198,20 +237,42 @@ class CarData: ObservableObject {
             }
         }
     }
+    func overallStatus() -> (String, Color) {
+        // Here, we use conditions to evaluate overall car status
+        if engineTemperature > settings.engineTemperatureThresholdHigh || batteryLevel < settings.batteryLevelThresholdLow || tirePressure < settings.tirePressureThresholdLow {
+            return ("Warning", .red)
+        } else if engineTemperature > settings.engineTemperatureThresholdModerate || batteryLevel < settings.batteryLevelThresholdModerate {
+            return ("Moderate", .orange)
+        } else {
+            return ("Good", .green)
+        }
+    }
     
     func saveDiagnosticData() {
         let history = [
             "date": Date(),
             "engineTemperature": engineTemperature,
             "batteryLevel": batteryLevel,
-            "fuelEfficiency": fuelEfficiency
+            "fuelEfficiency": fuelEfficiency,
+            "tirePressure": tirePressure,
+            "batteryVoltage": batteryVoltage,
+            "fuelLevel": fuelLevel,
+            "intakeAirTemperature": intakeAirTemperature,
+            "engineLoad": engineLoad,
+            "oxygenSensor": oxygenSensor
         ] as [String : Any]
         
         var diagnosticHistory = UserDefaults.standard.array(forKey: "DiagnosticHistory") as? [[String: Any]] ?? []
         diagnosticHistory.append(history)
+        
+        // 최근 10개의 기록만 유지
+        if diagnosticHistory.count > 10 {
+            diagnosticHistory.removeFirst(diagnosticHistory.count - 10)
+        }
+        
         UserDefaults.standard.set(diagnosticHistory, forKey: "DiagnosticHistory")
     }
-    
+
     static func loadDiagnosticHistory() -> [DiagnosticRecord] {
         let diagnosticHistory = UserDefaults.standard.array(forKey: "DiagnosticHistory") as? [[String: Any]] ?? []
         
@@ -219,12 +280,24 @@ class CarData: ObservableObject {
             if let date = item["date"] as? Date,
                let engineTemperature = item["engineTemperature"] as? Double,
                let batteryLevel = item["batteryLevel"] as? Double,
-               let fuelEfficiency = item["fuelEfficiency"] as? Double {
+               let fuelEfficiency = item["fuelEfficiency"] as? Double,
+               let tirePressure = item["tirePressure"] as? Double,
+               let batteryVoltage = item["batteryVoltage"] as? Double,
+               let fuelLevel = item["fuelLevel"] as? Double,
+               let intakeAirTemperature = item["intakeAirTemperature"] as? Double,
+               let engineLoad = item["engineLoad"] as? Double,
+               let oxygenSensor = item["oxygenSensor"] as? Double {
                 return DiagnosticRecord(
                     date: date,
                     engineTemperature: engineTemperature,
                     batteryLevel: batteryLevel,
-                    fuelEfficiency: fuelEfficiency
+                    fuelEfficiency: fuelEfficiency,
+                    tirePressure: tirePressure,
+                    batteryVoltage: batteryVoltage,
+                    fuelLevel: fuelLevel,
+                    intakeAirTemperature: intakeAirTemperature,
+                    engineLoad: engineLoad,
+                    oxygenSensor: oxygenSensor
                 )
             }
             return nil
@@ -238,18 +311,11 @@ extension CarData {
         let pdfData = NSMutableData()
         
         UIGraphicsBeginPDFContextToData(pdfData, pageBounds, nil)
-        var yOffset: CGFloat = 740 // 페이지 상단에서부터 시작
-        
-        func addNewPageIfNeeded() {
-            if yOffset < 100 { // 충분한 공간이 없으면 새 페이지 추가
-                UIGraphicsBeginPDFPageWithInfo(pageBounds, nil)
-                yOffset = 740
-            }
-        }
-        
         UIGraphicsBeginPDFPageWithInfo(pageBounds, nil)
         
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        
+        var yOffset: CGFloat = 72 // A4 용지 상단에서 시작 위치
         
         // 상단 타이틀 및 날짜
         let reportTitle = "Comprehensive Car Diagnostic Report"
@@ -260,7 +326,7 @@ extension CarData {
             .foregroundColor: UIColor.black
         ]
         reportTitle.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: titleAttributes)
-        yOffset -= 30
+        yOffset += 30
         
         let dateText = "Generated on: \(diagnosticDate)"
         let dateAttributes: [NSAttributedString.Key: Any] = [
@@ -268,7 +334,7 @@ extension CarData {
             .foregroundColor: UIColor.gray
         ]
         dateText.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: dateAttributes)
-        yOffset -= 40
+        yOffset += 40
         
         // 진단 요약 섹션
         let sectionTitleAttributes: [NSAttributedString.Key: Any] = [
@@ -280,53 +346,34 @@ extension CarData {
             .foregroundColor: UIColor.darkGray
         ]
         
-        // 섹션 타이틀
         "Diagnostic Summary".draw(at: CGPoint(x: 72, y: yOffset), withAttributes: sectionTitleAttributes)
-        yOffset -= 30
+        yOffset += 25
+
+        // 주요 항목 상태 표시
+        let diagnosticSummaries = [
+            "• Engine Temperature: \(engineTemperatureStatus().0) - \(String(format: "%.1f", engineTemperature))°C (\(settings.engineTemperatureThresholdModerate)~\(settings.engineTemperatureThresholdHigh)°C)",
+            "• Battery Level: \(batteryLevelStatus().0) - \(String(format: "%.1f", batteryLevel))% (\(settings.batteryLevelThresholdModerate)~100%)",
+            "• Fuel Efficiency: \(String(format: "%.1f", fuelEfficiency)) km/l",
+            "• Tire Pressure: \(tirePressureStatus().0) - \(String(format: "%.1f", tirePressure)) PSI (\(settings.tirePressureThresholdLow)~\(settings.tirePressureThresholdHigh) PSI)",
+            "• Battery Voltage: \(String(format: "%.1f", batteryVoltage)) V (12.0~13.8 V)",
+            "• Fuel Level: \(String(format: "%.1f", fuelLevel)) %",
+            "• Intake Air Temperature: \(String(format: "%.1f", intakeAirTemperature)) °C (20~35 °C)",
+            "• Engine Load: \(String(format: "%.1f", engineLoad)) % (0~70%)",
+            "• Oxygen Sensor: \(String(format: "%.2f", oxygenSensor)) V (0.2~0.8 V)"
+        ]
         
-        // 진단 요약 내용
-        let engineSummary = "• Engine Temperature: \(engineTemperatureStatus().0) - \(String(format: "%.1f", engineTemperature))°C"
-        let batterySummary = "• Battery Level: \(batteryLevelStatus().0) - \(String(format: "%.1f", batteryLevel))%"
-        let fuelSummary = "• Fuel Efficiency: \(String(format: "%.1f", fuelEfficiency)) km/l"
-        let tirePressureSummary = "• Tire Pressure: \(tirePressureStatus().0) - \(String(format: "%.1f", tirePressure)) PSI"
-        let batteryVoltageSummary = "• Battery Voltage: \(String(format: "%.1f", batteryVoltage)) V"
-        
-        let summaries = [engineSummary, batterySummary, fuelSummary, tirePressureSummary, batteryVoltageSummary]
-        
-        for summary in summaries {
+        for summary in diagnosticSummaries {
             summary.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: contentAttributes)
-            yOffset -= 20
-            addNewPageIfNeeded()
+            yOffset += 20
         }
         
-        yOffset -= 20
+        yOffset += 40
         
-        // 권장 조치 섹션
-        "Recommended Actions".draw(at: CGPoint(x: 72, y: yOffset), withAttributes: sectionTitleAttributes)
-        yOffset -= 30
-        let recommendationsText = generateRecommendations()
+        // 주요 그래프 - 엔진 온도 및 배터리 레벨
+        drawLineGraph(dataPoints: engineTemperatureHistory, title: "Engine Temperature Over Time", yAxisLabel: "°C", xAxisLabel: "Time", context: context, origin: CGPoint(x: 72, y: yOffset))
+        yOffset += 140
         
-        // 단일 줄로 작성된 텍스트를 각 줄로 나눠서 그려주는 방식으로 수정
-        for line in recommendationsText.split(separator: "\n") {
-            let lineText = String(line)
-            lineText.draw(at: CGPoint(x: 72, y: yOffset), withAttributes: contentAttributes)
-            yOffset -= 20
-            addNewPageIfNeeded()
-        }
-        yOffset -= 10
-        
-        // 그래프 추가
-        drawLineGraph(dataPoints: engineTemperatureHistory, title: "Engine Temperature Over Time", context: context, origin: CGPoint(x: 72, y: yOffset))
-        yOffset -= 150
-        addNewPageIfNeeded()
-        
-        drawLineGraph(dataPoints: batteryLevelHistory, title: "Battery Level Over Time", context: context, origin: CGPoint(x: 72, y: yOffset))
-        yOffset -= 150
-        addNewPageIfNeeded()
-        
-        drawLineGraph(dataPoints: tirePressureHistory, title: "Tire Pressure Over Time", context: context, origin: CGPoint(x: 72, y: yOffset))
-        yOffset -= 150
-        addNewPageIfNeeded()
+        drawLineGraph(dataPoints: batteryLevelHistory, title: "Battery Level Over Time", yAxisLabel: "%", xAxisLabel: "Time", context: context, origin: CGPoint(x: 72, y: yOffset))
         
         UIGraphicsEndPDFContext()
         
@@ -341,42 +388,46 @@ extension CarData {
         }
     }
     
-    // 권장 조치를 생성하는 메서드
-    private func generateRecommendations() -> String {
-        var recommendations = [String]()
-        
-        if engineTemperature > settings.engineTemperatureThreshold {
-            recommendations.append("Engine temperature is high. Check coolant and radiator.")
-        }
-        if batteryLevel < settings.batteryLevelThreshold {
-            recommendations.append("Battery level is low. Consider recharging or replacing the battery.")
-        }
-        if tirePressure < 30 || tirePressure > 35 {
-            recommendations.append("Tire pressure is outside the optimal range. Adjust pressure as needed.")
-        }
-        if batteryVoltage < 12.0 || batteryVoltage > 13.8 {
-            recommendations.append("Battery voltage is abnormal. Check the alternator and battery health.")
-        }
-        
-        return recommendations.joined(separator: "\n")
-    }
-    
-    // 그래프를 그리는 메서드 (엔진 온도 예시)
-    private func drawLineGraph(dataPoints: [DataPoint], title: String, context: CGContext, origin: CGPoint) {
-        context.saveGState()
+    // 그래프를 그리는 메서드 (축과 단위 추가)
+    private func drawLineGraph(dataPoints: [DataPoint], title: String, yAxisLabel: String, xAxisLabel: String, context: CGContext, origin: CGPoint) {
         context.setFillColor(UIColor.lightGray.cgColor)
-        context.fill(CGRect(x: origin.x, y: origin.y - 100, width: 468, height: 100))
+        context.fill(CGRect(x: origin.x, y: origin.y, width: 468, height: 100))
         
         context.setStrokeColor(UIColor.blue.cgColor)
         context.setLineWidth(1.5)
         
+        context.setStrokeColor(UIColor.black.cgColor)
+        context.setLineWidth(0.5)
+        
+        // Y축 그리기
+        context.move(to: CGPoint(x: origin.x, y: origin.y))
+        context.addLine(to: CGPoint(x: origin.x, y: origin.y + 100))
+        context.strokePath()
+        
+        // X축 그리기
+        context.move(to: CGPoint(x: origin.x, y: origin.y + 100))
+        context.addLine(to: CGPoint(x: origin.x + 468, y: origin.y + 100))
+        context.strokePath()
+        
+        // Y축 라벨
+        let maxY = dataPoints.map { $0.value }.max() ?? 1
+        let yAxisLabelAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 10),
+            .foregroundColor: UIColor.black
+        ]
+        "\(Int(maxY)) \(yAxisLabel)".draw(at: CGPoint(x: origin.x - 30, y: origin.y), withAttributes: yAxisLabelAttributes)
+        "0 \(yAxisLabel)".draw(at: CGPoint(x: origin.x - 30, y: origin.y + 90), withAttributes: yAxisLabelAttributes)
+        
+        // X축 라벨
+        xAxisLabel.draw(at: CGPoint(x: origin.x + 230, y: origin.y + 110), withAttributes: yAxisLabelAttributes)
+
+        // 데이터 라인 그리기
         if dataPoints.count > 1 {
-            let maxY = dataPoints.map { $0.value }.max() ?? 1
             let scale = 100 / maxY
             
             for i in 1..<dataPoints.count {
-                let startPoint = CGPoint(x: origin.x + CGFloat(i - 1) * 10, y: origin.y - CGFloat(dataPoints[i - 1].value) * scale)
-                let endPoint = CGPoint(x: origin.x + CGFloat(i) * 10, y: origin.y - CGFloat(dataPoints[i].value) * scale)
+                let startPoint = CGPoint(x: origin.x + CGFloat(i - 1) * 10, y: origin.y + 100 - CGFloat(dataPoints[i - 1].value) * scale)
+                let endPoint = CGPoint(x: origin.x + CGFloat(i) * 10, y: origin.y + 100 - CGFloat(dataPoints[i].value) * scale)
                 
                 context.move(to: startPoint)
                 context.addLine(to: endPoint)
@@ -388,8 +439,6 @@ extension CarData {
             .font: UIFont.systemFont(ofSize: 12),
             .foregroundColor: UIColor.black
         ]
-        title.draw(at: CGPoint(x: origin.x, y: origin.y + 10), withAttributes: titleAttributes)
-        
-        context.restoreGState()
+        title.draw(at: CGPoint(x: origin.x, y: origin.y - 20), withAttributes: titleAttributes)
     }
 }
