@@ -50,7 +50,7 @@ struct DiagnosticHistoryView: View {
         isLoading = true
         DispatchQueue.global(qos: .background).async {
             // 추가할 페이지 범위 설정
-            let newRecords = Array(CarData.loadDiagnosticHistory().suffix(from: currentPage * itemsPerPage).prefix(itemsPerPage))
+            let newRecords = Array(DiagnosticDataManager.loadDiagnosticHistory().suffix(from: currentPage * itemsPerPage).prefix(itemsPerPage))
             DispatchQueue.main.async {
                 self.historyData.append(contentsOf: newRecords)
                 self.currentPage += 1

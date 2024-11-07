@@ -1,0 +1,76 @@
+import Foundation
+import UserNotifications
+
+class AlertManager {
+    private let warningManager: WarningManager
+
+    init(warningManager: WarningManager) {
+        self.warningManager = warningManager
+    }
+
+    func sendAlertNotification(message: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Car Diagnostic Alert"
+        content.body = message
+        content.sound = .default
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+    }
+    
+    static func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if let error = error {
+                print("Notification permission error: \(error)")
+            }
+        }
+    }
+    
+    func checkForAlerts(carData: CarData) {
+        // 엔진 온도 경고
+        if carData.engineTemperature > carData.settings.engineTemperatureThresholdHigh {
+            let message = String(format: "Warning: Engine temperature is above %.0f°C!", carData.settings.engineTemperatureThresholdHigh)
+            sendAlertNotification(message: message)
+            warningManager.logWarning(type: "Engine Temperature", message: message)
+        }
+        
+        // 배터리 레벨 경고
+        if carData.batteryLevel < carData.settings.batteryLevelThresholdLow {
+            let message = String(format: "Warning: Battery level is below %.0f%%!", carData.settings.batteryLevelThresholdLow)
+            sendAlertNotification(message: message)
+            warningManager.logWarning(type: "Battery Level", message: message)
+        }
+        
+        // 타이어 압력 경고
+        if carData.tirePressure < carData.settings.tirePressureThresholdLow {
+            let message = String(format: "Warning: Tire pressure is below %.0f PSI!", carData.settings.tirePressureThresholdLow)
+            sendAlertNotification(message: message)
+            warningManager.logWarning(type: "Tire Pressure", message: message)
+        } else if carData.tirePressure > carData.settings.tirePressureThresholdHigh {
+            let message = String(format: "Warning: Tire pressure is above %.0f PSI!", carData.settings.tirePressureThresholdHigh)
+            sendAlertNotification(message: message)
+            warningManager.logWarning(type: "Tire Pressure", message: message)
+        }
+        
+        // 배터리 전압 경고
+        if carData.batteryVoltage < 12.0 || carData.batteryVoltage > 13.8 {
+            let message = "Warning: Battery voltage is abnormal (normal range: 12.0 - 13.8 V)."
+            sendAlertNotification(message: message)
+            warningManager.logWarning(type: "Battery Voltage", message: message)
+        }
+        
+        // 산소 센서 경고
+        if carData.oxygenSensor < 0.2 || carData.oxygenSensor > 0.8 {
+            let message = "Warning: Oxygen sensor voltage is outside the normal range (0.2 - 0.8 V)."
+            sendAlertNotification(message: message)
+            warningManager.logWarning(type: "Oxygen Sensor", message: message)
+        }
+        
+        // 연료 레벨 경고 (예시: 15% 이하일 때)
+        if carData.fuelLevel < 15 {
+            let message = "Warning: Fuel level is below 15%."
+            sendAlertNotification(message: message)
+            warningManager.logWarning(type: "Fuel Level", message: message)
+        }
+    }
+}

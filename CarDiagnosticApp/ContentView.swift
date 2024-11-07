@@ -29,26 +29,16 @@ struct ContentView: View {
                     }
                     .padding()
 
-                    // 연결되지 않은 경우 경고 메시지 표시
                     if !carData.isConnected {
-                        Text("Please connect to the OBD-II device to start data monitoring.")
-                            .foregroundColor(.red)
-                            .font(.subheadline)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
+                        ConnectionWarningMessage()
                     }
                     
                     Text("Car Diagnostic Summary")
                         .font(.title)
                         .padding()
                     
-                    // 핵심 진단 항목 요약
-                    Group {
-                        DiagnosticDataView(label: "Engine Temperature:", value: String(format: "%.1f °C", carData.engineTemperature), color: carData.engineTemperatureStatus().1)
-                        DiagnosticDataView(label: "Battery Level:", value: String(format: "%.1f %%", carData.batteryLevel), color: carData.batteryLevelStatus().1)
-                        DiagnosticDataView(label: "Tire Pressure:", value: String(format: "%.1f PSI", carData.tirePressure), color: carData.tirePressureStatus().1)
-                    }
-                    .padding()
+                    DiagnosticSummary(carData: carData, settings: settings)
+
 
                     // 요약 경고 메시지 표시
                     if let alertMessage = overallStatusAlertMessage() {
@@ -105,85 +95,9 @@ struct ContentView: View {
     }
 }
 
-struct DiagnosticDataView: View {
-    var label: String
-    var value: String
-    var color: Color
-    
-    var body: some View {
-        HStack {
-            Text(label)
-            Spacer()
-            Text(value)
-                .foregroundColor(color)
-        }
-        .padding(.horizontal)
-    }
-}
 
-struct NavigationLinksView: View {
-    var carData: CarData
-    var settings: ThresholdSettings
-    
-    var body: some View {
-        VStack(spacing: 10) {
-            NavigationLink(destination: DetailedDiagnosticView(carData: carData)) {
-                NavigationButtonView(label: "View Detailed Diagnostics")
-            }
-            
-            NavigationLink(destination: DiagnosticHistoryView(carData: carData)) {
-                NavigationButtonView(label: "View Diagnostic History")
-            }
-            
-            NavigationLink(destination: ThresholdSettingsView(settings: settings)) {
-                NavigationButtonView(label: "Set Alert Thresholds")
-            }
-            
-            NavigationLink(destination: WarningHistoryView(carData: carData)) {
-                NavigationButtonView(label: "View Warning History")
-            }
-        }
-    }
-}
 
-struct NavigationButtonView: View {
-    var label: String
-    
-    var body: some View {
-        Text(label)
-            .foregroundColor(.blue)
-            .padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.blue, lineWidth: 1)
-            )
-    }
-}
 
-struct ReportButton: View {
-    @Binding var showingShareSheet: Bool
-    @Binding var reportURL: URL?
-    @Binding var alertMessage: String
-    @Binding var showAlert: Bool
-    var carData: CarData
-    
-    var body: some View {
-        Button(action: {
-            if let url = carData.generateEnhancedPDFReport() {
-                reportURL = url
-                showingShareSheet = true
-            } else {
-                alertMessage = "Failed to generate report."
-                showAlert = true
-            }
-        }) {
-            Text("Generate and Share Report")
-                .foregroundColor(.blue)
-                .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.blue, lineWidth: 1)
-                )
-        }
-    }
-}
+
+
+

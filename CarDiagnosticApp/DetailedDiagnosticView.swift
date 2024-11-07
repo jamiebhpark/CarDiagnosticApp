@@ -2,6 +2,12 @@ import SwiftUI
 
 struct DetailedDiagnosticView: View {
     @ObservedObject var carData: CarData
+    private var carStatusManager: CarStatusManager
+    
+    init(carData: CarData) {
+        self.carData = carData
+        self.carStatusManager = CarStatusManager(settings: carData.settings)
+    }
     
     var body: some View {
         VStack(spacing: 20) {
@@ -14,8 +20,9 @@ struct DetailedDiagnosticView: View {
                 HStack {
                     Text("Engine Temperature:")
                     Spacer()
-                    let (engineStatusText, engineStatusColor) = carData.engineTemperatureStatus()
-                    Text("\(carData.engineTemperature, specifier: "%.1f") °C - \(engineStatusText)")
+                    let engineStatus = carStatusManager.evaluateEngineTemperature(carData.engineTemperature)
+                    let engineStatusColor = engineStatus != nil ? Color.red : Color.green
+                    Text("\(carData.engineTemperature, specifier: "%.1f") °C")
                         .foregroundColor(engineStatusColor)
                 }
                 
@@ -23,8 +30,9 @@ struct DetailedDiagnosticView: View {
                 HStack {
                     Text("Battery Level:")
                     Spacer()
-                    let (batteryStatusText, batteryStatusColor) = carData.batteryLevelStatus()
-                    Text("\(carData.batteryLevel, specifier: "%.1f") % - \(batteryStatusText)")
+                    let batteryStatus = carStatusManager.evaluateBatteryLevel(carData.batteryLevel)
+                    let batteryStatusColor = batteryStatus != nil ? Color.orange : Color.green
+                    Text("\(carData.batteryLevel, specifier: "%.1f") %")
                         .foregroundColor(batteryStatusColor)
                 }
                 
@@ -40,8 +48,9 @@ struct DetailedDiagnosticView: View {
                 HStack {
                     Text("Tire Pressure:")
                     Spacer()
-                    let (tireStatusText, tireStatusColor) = carData.tirePressureStatus()
-                    Text("\(carData.tirePressure, specifier: "%.1f") PSI - \(tireStatusText)")
+                    let tireStatus = carStatusManager.evaluateTirePressure(carData.tirePressure)
+                    let tireStatusColor = tireStatus != nil ? Color.red : Color.green
+                    Text("\(carData.tirePressure, specifier: "%.1f") PSI")
                         .foregroundColor(tireStatusColor)
                 }
                 
@@ -49,16 +58,20 @@ struct DetailedDiagnosticView: View {
                 HStack {
                     Text("Battery Voltage:")
                     Spacer()
+                    let voltageStatus = carStatusManager.evaluateBatteryVoltage(carData.batteryVoltage)
+                    let voltageStatusColor = voltageStatus != nil ? Color.orange : Color.primary
                     Text("\(carData.batteryVoltage, specifier: "%.1f") V")
-                        .foregroundColor(carData.batteryVoltage < 12.0 || carData.batteryVoltage > 13.8 ? .orange : .primary)
+                        .foregroundColor(voltageStatusColor)
                 }
                 
                 // Fuel Level
                 HStack {
                     Text("Fuel Level:")
                     Spacer()
+                    let fuelStatus = carStatusManager.evaluateFuelLevel(carData.fuelLevel)
+                    let fuelStatusColor = fuelStatus != nil ? Color.red : Color.primary
                     Text("\(carData.fuelLevel, specifier: "%.1f") %")
-                        .foregroundColor(carData.fuelLevel < 15 ? .red : .primary)
+                        .foregroundColor(fuelStatusColor)
                 }
                 
                 // Intake Air Temperature
@@ -81,8 +94,10 @@ struct DetailedDiagnosticView: View {
                 HStack {
                     Text("Oxygen Sensor:")
                     Spacer()
+                    let oxygenStatus = carStatusManager.evaluateOxygenSensor(carData.oxygenSensor)
+                    let oxygenStatusColor = oxygenStatus != nil ? Color.orange : Color.primary
                     Text("\(carData.oxygenSensor, specifier: "%.2f") V")
-                        .foregroundColor(carData.oxygenSensor < 0.2 || carData.oxygenSensor > 0.8 ? .orange : .primary)
+                        .foregroundColor(oxygenStatusColor)
                 }
             }
             .padding()
