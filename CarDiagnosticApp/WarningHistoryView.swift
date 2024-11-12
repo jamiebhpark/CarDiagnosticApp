@@ -9,10 +9,15 @@ struct WarningHistoryView: View {
                 .font(.title)
                 .padding()
 
-            List(carData.warningLogs) { log in
+            List(carData.warningLogs, id: \.id) { log in
                 VStack(alignment: .leading) {
-                    Text(log.date, style: .date)
-                        .font(.headline)
+                    HStack {
+                        Text(log.date, style: .date)
+                            .font(.headline)
+                        Text(log.date, style: .time)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
                     Text("\(log.type): \(log.message)")
                         .font(.subheadline)
                         .foregroundColor(.red)

@@ -32,6 +32,15 @@ struct ContentView: View {
                     if !carData.isConnected {
                         ConnectionWarningMessage()
                     }
+                    Button(action: {
+                        carData.connectToOBD()
+                    }) {
+                        Text("Connect to OBD-II")
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
                     
                     Text("Car Diagnostic Summary")
                         .font(.title)
@@ -94,10 +103,3 @@ struct ContentView: View {
         return alerts.isEmpty ? nil : alerts.joined(separator: "\n")
     }
 }
-
-
-
-
-
-
-

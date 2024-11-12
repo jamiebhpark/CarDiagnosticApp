@@ -1,13 +1,19 @@
 import Foundation
 import UserNotifications
 
+/// `AlertManager`는 차량 진단 데이터와 관련된 경고 알림을 처리하는 클래스입니다.
+/// `WarningManager`를 사용하여 경고를 기록하고, iOS의 `UNUserNotificationCenter`를 통해 알림을 제공합니다.
 class AlertManager {
     private let warningManager: WarningManager
 
+    /// `AlertManager`의 초기화 메서드입니다.
+    /// - Parameter warningManager: 경고 기록을 관리할 `WarningManager` 인스턴스입니다.
     init(warningManager: WarningManager) {
         self.warningManager = warningManager
     }
 
+    /// 주어진 메시지를 사용해 알림을 전송하는 메서드입니다.
+    /// - Parameter message: 사용자에게 표시할 경고 메시지입니다.
     func sendAlertNotification(message: String) {
         let content = UNMutableNotificationContent()
         content.title = "Car Diagnostic Alert"
@@ -18,6 +24,8 @@ class AlertManager {
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
     
+    /// 알림 권한을 요청하는 정적 메서드입니다.
+    /// 사용자에게 알림, 배지, 소리 권한을 요청합니다.
     static func requestNotificationPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if let error = error {
@@ -26,6 +34,8 @@ class AlertManager {
         }
     }
     
+    /// 차량 데이터(`CarData`)를 검사하여 필요한 경고를 전송하고 기록하는 메서드입니다.
+    /// - Parameter carData: 검사할 차량 데이터입니다.
     func checkForAlerts(carData: CarData) {
         // 엔진 온도 경고
         if carData.engineTemperature > carData.settings.engineTemperatureThresholdHigh {
