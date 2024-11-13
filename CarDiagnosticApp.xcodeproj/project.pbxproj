@@ -6,8 +6,63 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7DE4DA4A2CE4665C00F7771B /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA2D2CE4665C00F7771B /* ActivityView.swift */; };
+		7DE4DA4B2CE4665C00F7771B /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA2E2CE4665C00F7771B /* AlertManager.swift */; };
+		7DE4DA4C2CE4665C00F7771B /* BatteryLifeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA302CE4665C00F7771B /* BatteryLifeManager.swift */; };
+		7DE4DA4D2CE4665C00F7771B /* BatteryUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA312CE4665C00F7771B /* BatteryUsage.swift */; };
+		7DE4DA4E2CE4665C00F7771B /* CarData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA322CE4665C00F7771B /* CarData.swift */; };
+		7DE4DA502CE4665C00F7771B /* CarStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA342CE4665C00F7771B /* CarStatusManager.swift */; };
+		7DE4DA512CE4665C00F7771B /* ConnectionWarningMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA352CE4665C00F7771B /* ConnectionWarningMessage.swift */; };
+		7DE4DA522CE4665C00F7771B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA362CE4665C00F7771B /* ContentView.swift */; };
+		7DE4DA532CE4665C00F7771B /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA372CE4665C00F7771B /* DataPoint.swift */; };
+		7DE4DA542CE4665C00F7771B /* DetailedDiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA382CE4665C00F7771B /* DetailedDiagnosticView.swift */; };
+		7DE4DA552CE4665C00F7771B /* DiagnosticDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA392CE4665C00F7771B /* DiagnosticDataManager.swift */; };
+		7DE4DA562CE4665C00F7771B /* DiagnosticDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA3A2CE4665C00F7771B /* DiagnosticDataView.swift */; };
+		7DE4DA572CE4665C00F7771B /* DiagnosticHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA3B2CE4665C00F7771B /* DiagnosticHistoryView.swift */; };
+		7DE4DA582CE4665C00F7771B /* DiagnosticRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA3C2CE4665C00F7771B /* DiagnosticRecord.swift */; };
+		7DE4DA592CE4665C00F7771B /* DiagnosticSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA3D2CE4665C00F7771B /* DiagnosticSummary.swift */; };
+		7DE4DA5A2CE4665C00F7771B /* LineGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA3E2CE4665C00F7771B /* LineGraphView.swift */; };
+		7DE4DA5B2CE4665C00F7771B /* NavigationButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA3F2CE4665C00F7771B /* NavigationButtonView.swift */; };
+		7DE4DA5C2CE4665C00F7771B /* NavigationLinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA402CE4665C00F7771B /* NavigationLinksView.swift */; };
+		7DE4DA5D2CE4665C00F7771B /* PDFReportGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA412CE4665C00F7771B /* PDFReportGenerator.swift */; };
+		7DE4DA5E2CE4665C00F7771B /* ReportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA422CE4665C00F7771B /* ReportButton.swift */; };
+		7DE4DA5F2CE4665C00F7771B /* ThresholdSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA432CE4665C00F7771B /* ThresholdSettings.swift */; };
+		7DE4DA602CE4665C00F7771B /* ThresholdSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA442CE4665C00F7771B /* ThresholdSettingsView.swift */; };
+		7DE4DA612CE4665C00F7771B /* WarningHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA452CE4665C00F7771B /* WarningHistoryView.swift */; };
+		7DE4DA622CE4665C00F7771B /* WarningLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA462CE4665C00F7771B /* WarningLog.swift */; };
+		7DE4DA632CE4665C00F7771B /* WarningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA472CE4665C00F7771B /* WarningManager.swift */; };
+		7DE4DA6A2CE46FA100F7771B /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA692CE46FA000F7771B /* BluetoothManager.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		7D7374C72CD9F8D900FBA7FC /* CarDiagnosticApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarDiagnosticApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7DE4DA2D2CE4665C00F7771B /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
+		7DE4DA2E2CE4665C00F7771B /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
+		7DE4DA302CE4665C00F7771B /* BatteryLifeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryLifeManager.swift; sourceTree = "<group>"; };
+		7DE4DA312CE4665C00F7771B /* BatteryUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryUsage.swift; sourceTree = "<group>"; };
+		7DE4DA322CE4665C00F7771B /* CarData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarData.swift; sourceTree = "<group>"; };
+		7DE4DA342CE4665C00F7771B /* CarStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarStatusManager.swift; sourceTree = "<group>"; };
+		7DE4DA352CE4665C00F7771B /* ConnectionWarningMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionWarningMessage.swift; sourceTree = "<group>"; };
+		7DE4DA362CE4665C00F7771B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7DE4DA372CE4665C00F7771B /* DataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
+		7DE4DA382CE4665C00F7771B /* DetailedDiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDiagnosticView.swift; sourceTree = "<group>"; };
+		7DE4DA392CE4665C00F7771B /* DiagnosticDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticDataManager.swift; sourceTree = "<group>"; };
+		7DE4DA3A2CE4665C00F7771B /* DiagnosticDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticDataView.swift; sourceTree = "<group>"; };
+		7DE4DA3B2CE4665C00F7771B /* DiagnosticHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticHistoryView.swift; sourceTree = "<group>"; };
+		7DE4DA3C2CE4665C00F7771B /* DiagnosticRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticRecord.swift; sourceTree = "<group>"; };
+		7DE4DA3D2CE4665C00F7771B /* DiagnosticSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticSummary.swift; sourceTree = "<group>"; };
+		7DE4DA3E2CE4665C00F7771B /* LineGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineGraphView.swift; sourceTree = "<group>"; };
+		7DE4DA3F2CE4665C00F7771B /* NavigationButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationButtonView.swift; sourceTree = "<group>"; };
+		7DE4DA402CE4665C00F7771B /* NavigationLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationLinksView.swift; sourceTree = "<group>"; };
+		7DE4DA412CE4665C00F7771B /* PDFReportGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReportGenerator.swift; sourceTree = "<group>"; };
+		7DE4DA422CE4665C00F7771B /* ReportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportButton.swift; sourceTree = "<group>"; };
+		7DE4DA432CE4665C00F7771B /* ThresholdSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdSettings.swift; sourceTree = "<group>"; };
+		7DE4DA442CE4665C00F7771B /* ThresholdSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdSettingsView.swift; sourceTree = "<group>"; };
+		7DE4DA452CE4665C00F7771B /* WarningHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningHistoryView.swift; sourceTree = "<group>"; };
+		7DE4DA462CE4665C00F7771B /* WarningLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningLog.swift; sourceTree = "<group>"; };
+		7DE4DA472CE4665C00F7771B /* WarningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningManager.swift; sourceTree = "<group>"; };
+		7DE4DA692CE46FA000F7771B /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -34,6 +89,9 @@
 			children = (
 				7D7374C92CD9F8D900FBA7FC /* CarDiagnosticApp */,
 				7D7374C82CD9F8D900FBA7FC /* Products */,
+				7DE4DA642CE46ABD00F7771B /* Model */,
+				7DE4DA662CE46AE400F7771B /* View */,
+				7DE4DA682CE46AF400F7771B /* Controller */,
 			);
 			sourceTree = "<group>";
 		};
@@ -43,6 +101,53 @@
 				7D7374C72CD9F8D900FBA7FC /* CarDiagnosticApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7DE4DA642CE46ABD00F7771B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7DE4DA462CE4665C00F7771B /* WarningLog.swift */,
+				7DE4DA372CE4665C00F7771B /* DataPoint.swift */,
+				7DE4DA312CE4665C00F7771B /* BatteryUsage.swift */,
+				7DE4DA3C2CE4665C00F7771B /* DiagnosticRecord.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		7DE4DA662CE46AE400F7771B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				7DE4DA422CE4665C00F7771B /* ReportButton.swift */,
+				7DE4DA452CE4665C00F7771B /* WarningHistoryView.swift */,
+				7DE4DA3E2CE4665C00F7771B /* LineGraphView.swift */,
+				7DE4DA382CE4665C00F7771B /* DetailedDiagnosticView.swift */,
+				7DE4DA362CE4665C00F7771B /* ContentView.swift */,
+				7DE4DA3B2CE4665C00F7771B /* DiagnosticHistoryView.swift */,
+				7DE4DA2D2CE4665C00F7771B /* ActivityView.swift */,
+				7DE4DA3A2CE4665C00F7771B /* DiagnosticDataView.swift */,
+				7DE4DA402CE4665C00F7771B /* NavigationLinksView.swift */,
+				7DE4DA3F2CE4665C00F7771B /* NavigationButtonView.swift */,
+				7DE4DA442CE4665C00F7771B /* ThresholdSettingsView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		7DE4DA682CE46AF400F7771B /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				7DE4DA472CE4665C00F7771B /* WarningManager.swift */,
+				7DE4DA322CE4665C00F7771B /* CarData.swift */,
+				7DE4DA2E2CE4665C00F7771B /* AlertManager.swift */,
+				7DE4DA432CE4665C00F7771B /* ThresholdSettings.swift */,
+				7DE4DA692CE46FA000F7771B /* BluetoothManager.swift */,
+				7DE4DA342CE4665C00F7771B /* CarStatusManager.swift */,
+				7DE4DA302CE4665C00F7771B /* BatteryLifeManager.swift */,
+				7DE4DA352CE4665C00F7771B /* ConnectionWarningMessage.swift */,
+				7DE4DA392CE4665C00F7771B /* DiagnosticDataManager.swift */,
+				7DE4DA3D2CE4665C00F7771B /* DiagnosticSummary.swift */,
+				7DE4DA412CE4665C00F7771B /* PDFReportGenerator.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,6 +224,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7DE4DA4A2CE4665C00F7771B /* ActivityView.swift in Sources */,
+				7DE4DA4B2CE4665C00F7771B /* AlertManager.swift in Sources */,
+				7DE4DA4C2CE4665C00F7771B /* BatteryLifeManager.swift in Sources */,
+				7DE4DA6A2CE46FA100F7771B /* BluetoothManager.swift in Sources */,
+				7DE4DA4D2CE4665C00F7771B /* BatteryUsage.swift in Sources */,
+				7DE4DA4E2CE4665C00F7771B /* CarData.swift in Sources */,
+				7DE4DA502CE4665C00F7771B /* CarStatusManager.swift in Sources */,
+				7DE4DA512CE4665C00F7771B /* ConnectionWarningMessage.swift in Sources */,
+				7DE4DA522CE4665C00F7771B /* ContentView.swift in Sources */,
+				7DE4DA532CE4665C00F7771B /* DataPoint.swift in Sources */,
+				7DE4DA542CE4665C00F7771B /* DetailedDiagnosticView.swift in Sources */,
+				7DE4DA552CE4665C00F7771B /* DiagnosticDataManager.swift in Sources */,
+				7DE4DA562CE4665C00F7771B /* DiagnosticDataView.swift in Sources */,
+				7DE4DA572CE4665C00F7771B /* DiagnosticHistoryView.swift in Sources */,
+				7DE4DA582CE4665C00F7771B /* DiagnosticRecord.swift in Sources */,
+				7DE4DA592CE4665C00F7771B /* DiagnosticSummary.swift in Sources */,
+				7DE4DA5A2CE4665C00F7771B /* LineGraphView.swift in Sources */,
+				7DE4DA5B2CE4665C00F7771B /* NavigationButtonView.swift in Sources */,
+				7DE4DA5C2CE4665C00F7771B /* NavigationLinksView.swift in Sources */,
+				7DE4DA5D2CE4665C00F7771B /* PDFReportGenerator.swift in Sources */,
+				7DE4DA5E2CE4665C00F7771B /* ReportButton.swift in Sources */,
+				7DE4DA5F2CE4665C00F7771B /* ThresholdSettings.swift in Sources */,
+				7DE4DA602CE4665C00F7771B /* ThresholdSettingsView.swift in Sources */,
+				7DE4DA612CE4665C00F7771B /* WarningHistoryView.swift in Sources */,
+				7DE4DA622CE4665C00F7771B /* WarningLog.swift in Sources */,
+				7DE4DA632CE4665C00F7771B /* WarningManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
