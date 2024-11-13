@@ -26,6 +26,7 @@ struct ContentView: View {
                         Circle()
                             .fill(carData.isConnected ? Color.green : Color.red)
                             .frame(width: 12, height: 12)
+                            .accessibilityLabel(carData.isConnected ? "Connected to OBD-II" : "Not Connected")
                         Text(carData.isConnected ? "Connected to OBD-II" : "Not Connected")
                             .foregroundColor(carData.isConnected ? .green : .red)
                             .fontWeight(.bold)
@@ -43,9 +44,11 @@ struct ContentView: View {
                     }) {
                         Text("Connect to OBD-II")
                             .padding()
+                            .frame(maxWidth: .infinity)
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(10)
+                            .accessibilityLabel("Connect to OBD-II")
                     }
                     
                     Text("Car Diagnostic Summary")
@@ -61,10 +64,16 @@ struct ContentView: View {
                             .font(.headline)
                             .foregroundColor(.red)
                             .padding()
+                            .accessibilityLabel("Warning: \(alertMessage)")
                     }
                     
                     // 내비게이션 링크와 버튼을 표시하는 뷰
                     NavigationLinksView(carData: carData, settings: settings)
+                    
+                    // 유지 관리 팁 보기 버튼 추가
+                    NavigationLink(destination: MaintenanceTipsView(tipManager: carData.maintenanceTipManager)) {
+                        NavigationButtonView(label: "View Maintenance Tips")
+                    }
                     
                     // PDF 리포트 공유 버튼
                     ReportButton(showingShareSheet: $showingShareSheet, reportURL: $reportURL, alertMessage: $alertMessage, showAlert: $showAlert, carData: carData)
@@ -72,6 +81,7 @@ struct ContentView: View {
                     Spacer()
                 }
                 .padding()
+                // 접근성 레이블이 없는 `Alert` 대신 알림에 대한 접근성 제공
                 .alert(isPresented: $showAlert) {
                     Alert(title: Text("Alert"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                 }
@@ -93,6 +103,7 @@ struct ContentView: View {
                     }
                 })
             }
+            .navigationBarTitle("Car Diagnostic", displayMode: .inline) // 화면 제목 추가
         }
     }
     

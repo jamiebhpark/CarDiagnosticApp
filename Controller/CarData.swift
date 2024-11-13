@@ -29,6 +29,7 @@ class CarData: ObservableObject {
     var warningManager: WarningManager // 경고를 관리하는 매니저
     var batteryLifeManager: BatteryLifeManager // 배터리 수명을 예측하는 매니저
     var isConnected: Bool = false // OBD-II 연결 상태
+    @Published var maintenanceTipManager = MaintenanceTipManager() // 유지 관리 팁 관리 객체 추가
 
     // 경고 기록 노출을 위한 래퍼 프로퍼티
     var warningLogs: [WarningLog] {
@@ -61,6 +62,10 @@ class CarData: ObservableObject {
     /// WarningManager를 통해 경고를 평가하고 기록
     public func checkForAlerts() {
         warningManager.evaluateAndLogWarnings(carData: self)
+        updateMaintenanceTips() // 경고 평가 후 유지 관리 팁 업데이트
+    }
+    private func updateMaintenanceTips() {
+        maintenanceTipManager.updateTips(basedOn: self, warningCount: warningManager.warningCount)
     }
     
     /// OBD-II 장치에 연결하는 메서드

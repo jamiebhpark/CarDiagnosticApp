@@ -33,6 +33,8 @@
 		7DE4DA622CE4665C00F7771B /* WarningLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA462CE4665C00F7771B /* WarningLog.swift */; };
 		7DE4DA632CE4665C00F7771B /* WarningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA472CE4665C00F7771B /* WarningManager.swift */; };
 		7DE4DA6A2CE46FA100F7771B /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA692CE46FA000F7771B /* BluetoothManager.swift */; };
+		7DE4DA6C2CE4719600F7771B /* MaintenanceTipManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA6B2CE4719600F7771B /* MaintenanceTipManager.swift */; };
+		7DE4DA6E2CE471B900F7771B /* MaintenanceTipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE4DA6D2CE471B900F7771B /* MaintenanceTipsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +65,8 @@
 		7DE4DA462CE4665C00F7771B /* WarningLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningLog.swift; sourceTree = "<group>"; };
 		7DE4DA472CE4665C00F7771B /* WarningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarningManager.swift; sourceTree = "<group>"; };
 		7DE4DA692CE46FA000F7771B /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
+		7DE4DA6B2CE4719600F7771B /* MaintenanceTipManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceTipManager.swift; sourceTree = "<group>"; };
+		7DE4DA6D2CE471B900F7771B /* MaintenanceTipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceTipsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -128,6 +132,7 @@
 				7DE4DA402CE4665C00F7771B /* NavigationLinksView.swift */,
 				7DE4DA3F2CE4665C00F7771B /* NavigationButtonView.swift */,
 				7DE4DA442CE4665C00F7771B /* ThresholdSettingsView.swift */,
+				7DE4DA6D2CE471B900F7771B /* MaintenanceTipsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -146,6 +151,7 @@
 				7DE4DA392CE4665C00F7771B /* DiagnosticDataManager.swift */,
 				7DE4DA3D2CE4665C00F7771B /* DiagnosticSummary.swift */,
 				7DE4DA412CE4665C00F7771B /* PDFReportGenerator.swift */,
+				7DE4DA6B2CE4719600F7771B /* MaintenanceTipManager.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -240,10 +246,12 @@
 				7DE4DA572CE4665C00F7771B /* DiagnosticHistoryView.swift in Sources */,
 				7DE4DA582CE4665C00F7771B /* DiagnosticRecord.swift in Sources */,
 				7DE4DA592CE4665C00F7771B /* DiagnosticSummary.swift in Sources */,
+				7DE4DA6E2CE471B900F7771B /* MaintenanceTipsView.swift in Sources */,
 				7DE4DA5A2CE4665C00F7771B /* LineGraphView.swift in Sources */,
 				7DE4DA5B2CE4665C00F7771B /* NavigationButtonView.swift in Sources */,
 				7DE4DA5C2CE4665C00F7771B /* NavigationLinksView.swift in Sources */,
 				7DE4DA5D2CE4665C00F7771B /* PDFReportGenerator.swift in Sources */,
+				7DE4DA6C2CE4719600F7771B /* MaintenanceTipManager.swift in Sources */,
 				7DE4DA5E2CE4665C00F7771B /* ReportButton.swift in Sources */,
 				7DE4DA5F2CE4665C00F7771B /* ThresholdSettings.swift in Sources */,
 				7DE4DA602CE4665C00F7771B /* ThresholdSettingsView.swift in Sources */,
