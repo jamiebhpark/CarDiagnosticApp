@@ -1,14 +1,20 @@
 import Foundation
 
-class WarningManager {
-    private let maxWarningLogs = 50
-    @Published private(set) var warningLogs: [WarningLog] = []
-    private let statusManager: CarStatusManager
+/// `WarningManager`는 차량 경고를 평가하고 로그를 관리하는 클래스입니다.
+/// 차량 상태를 평가하여 필요 시 경고를 기록하고 저장하는 역할을 합니다.
+class WarningManager: ObservableObject {
+    private let maxWarningLogs = 50  // 최대 경고 로그 수
+    @Published private(set) var warningLogs: [WarningLog] = []  // 경고 로그 배열
+    private let statusManager: CarStatusManager  // 차량 상태를 평가하는 매니저
 
+    /// `WarningManager`의 초기화 메서드
+    /// - Parameter statusManager: 차량 상태를 평가하기 위한 `CarStatusManager` 인스턴스
     init(statusManager: CarStatusManager) {
         self.statusManager = statusManager
     }
 
+    /// 차량 데이터를 평가하고, 필요한 경고를 로그에 추가하는 메서드
+    /// - Parameter carData: 평가할 차량 데이터 (`CarData` 인스턴스)
     func evaluateAndLogWarnings(carData: CarData) {
         var messages: [String] = []
 
@@ -43,22 +49,28 @@ class WarningManager {
         }
     }
 
+    /// 경고를 로그에 추가하고 저장하는 메서드
+    /// - Parameters:
+    ///   - type: 경고 유형
+    ///   - message: 경고 메시지
     func logWarning(type: String, message: String) {
         let log = WarningLog(date: Date(), type: type, message: message)
         warningLogs.append(log)
         if warningLogs.count > maxWarningLogs {
-            warningLogs.removeFirst()
+            warningLogs.removeFirst()  // 최대 개수를 초과하면 가장 오래된 항목 제거
         }
 
-        saveWarningLogs() // 변경된 로그 저장
+        saveWarningLogs()  // 변경된 로그를 저장
     }
 
+    /// 경고 로그를 `UserDefaults`에 저장하는 메서드
     private func saveWarningLogs() {
         if let data = try? JSONEncoder().encode(warningLogs) {
             UserDefaults.standard.set(data, forKey: "WarningLogs")
         }
     }
 
+    /// `UserDefaults`에서 경고 로그를 불러오는 메서드
     func loadWarningLogs() {
         if let data = UserDefaults.standard.data(forKey: "WarningLogs"),
            let logs = try? JSONDecoder().decode([WarningLog].self, from: data) {
