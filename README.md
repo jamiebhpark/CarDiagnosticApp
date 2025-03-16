@@ -1,4 +1,4 @@
-# 차량 진단 및 유지 관리 앱 (Car Diagnostic & Maintenance App)
+# Car Diagnostic & Maintenance App
 
 ## 개요
 
